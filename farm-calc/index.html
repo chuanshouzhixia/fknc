@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>疯狂农场·最终互斥完整版</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Microsoft YaHei",sans-serif}
+body{background:#f2f2f5;padding:20px}
+.container{max-width:700px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);padding:24px}
+h1{text-align:center;color:#2d7cf2;margin-bottom:20px;font-size:22px}
+.section{margin:20px 0;padding:16px;border:1px solid #e6e6eb;border-radius:12px}
+h2{font-size:16px;color:#333;margin-bottom:12px}
+select,input{width:100%;padding:10px;border:1px solid #dcdfe6;border-radius:8px;font-size:14px;margin-top:4px}
+
+.crop-select-wrap {position:relative;width:100%}
+#cropSelect {appearance:none;-webkit-appearance:none;padding-right:30px;background:#fff}
+.select-arrow {position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:12px;color:#999}
+
+.selected-crop {
+  display:flex;align-items:center;gap:12px;margin-top:10px;
+  padding:10px;background:#f7f8fa;border-radius:8px;
+}
+.crop-icon {
+  width:36px;height:36px;
+  background:#eee;border-radius:6px;
+  background-size:cover;background-position:center;
+}
+.crop-name{font-size:16px;font-weight:500;}
+
+.btn-group{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.onekey{padding:8px 12px;background:#2d7cf2;color:white;border:none;border-radius:8px;cursor:pointer}
+.onekey.warn{background:#ff4d4f}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.checkbox-item{padding:6px 10px;background:#f7f8fa;border-radius:6px;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.checkbox-item.moon{display:none}
+
+.gray{color:#999!important}
+.green{color:#00b42a!important}
+.blue{color:#1677ff!important}
+.purple{color:#722ed1!important}
+.gold{color:#fa8c16!important}
+.rainbow{
+    background:linear-gradient(90deg,#f5222d,#faad14,#14c9c9,#722ed1);
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;font-weight:bold;
+}
+
+button{width:100%;padding:14px;background:#2d7cf2;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:bold;margin-top:12px;cursor:pointer}
+.result{text-align:center;padding:20px;background:#f0f7ff;border-radius:12px;margin-top:20px}
+.price{font-size:32px;font-weight:bold;color:#2d7cf2}
+.weight-info{margin-top:10px;font-size:14px;color:#666}
+.combo-rule{font-size:12px;color:#666;margin:8px 0;padding:8px;background:#f7f8fa;border-radius:6px}
+.race-tip{font-size:12px;color:#666;margin-top:4px}
+.mut-sum-info{margin-top:8px;font-size:14px;color:#ff7875;font-weight:500}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>疯狂农场·组合突变精准计算器</h1>
+
+<div class="section">
+<h2>🌾 作物选择 & 种族值</h2>
+<div class="crop-select-wrap">
+<select id="cropSelect" onchange="setRaceValue();updateMoonVisibility();showSelectedCrop();calc()">
+<option value="200"  data-type="earth" data-img="榴莲.png">榴莲</option>
+<option value="370"  data-type="earth" data-img="向日葵.png">向日葵</option>
+<option value="800"  data-type="earth" data-img="荔枝.png">荔枝</option>
+<option value="2150" data-type="earth" data-img="猴桃.png">猴桃</option>
+<option value="4600" data-type="earth" data-img="松果.png">松果</option>
+<option value="8700" data-type="earth" data-img="草莓.png">草莓</option>
+<option value="9000" data-type="earth" data-img="蟠桃.png">蟠桃</option>
+<option value="9500" data-type="earth" data-img="仙人掌象.png">仙人掌象</option>
+<option value="25000" data-type="earth" data-img="大王菊.png">大王菊</option>
+<option value="25000" data-type="earth" data-img="葡萄.png">葡萄</option>
+<option value="50000" data-type="earth" data-img="惊奇菇.png">惊奇菇</option>
+<option value="1200" data-type="earth" data-img="土豆.png">土豆</option>
+<option value="1300" data-type="earth" data-img="黄瓜.png">黄瓜</option>
+<option value="1400" data-type="earth" data-img="苹果.png">苹果</option>
+<option value="1500" data-type="earth" data-img="香蕉.png">香蕉</option>
+<option value="1600" data-type="earth" data-img="西瓜.png">西瓜</option>
+<option value="1200" data-type="earth" data-img="椰子.png">椰子</option>
+<option value="1100" data-type="earth" data-img="波斯菊.png">波斯菊</option>
+<option value="1350" data-type="earth" data-img="番茄.png">番茄</option>
+<option value="1250" data-type="earth" data-img="大豆.png">大豆</option>
+<option value="1450" data-type="earth" data-img="棉花.png">棉花</option>
+<option value="1550" data-type="earth" data-img="橘子.png">橘子</option>
+<option value="1480" data-type="earth" data-img="梨.png">梨</option>
+<option value="1700" data-type="earth" data-img="石榴.png">石榴</option>
+<option value="4800" data-type="earth" data-img="魔鬼朝天椒.png">魔鬼朝天椒</option>
+<option value="2200" data-type="earth" data-img="牵牛花.png">牵牛花</option>
+<option value="3800" data-type="earth" data-img="香菇.png">香菇</option>
+<option value="1320" data-type="earth" data-img="玉米.png">玉米</option>
+<option value="2300" data-type="earth" data-img="竹子.png">竹子</option>
+<option value="1150" data-type="earth" data-img="白菜.png">白菜</option>
+
+<option value="25000" data-type="moon" data-img="幻月花.png">幻月花</option>
+<option value="22000" data-type="moon" data-img="液光藤.png">液光藤</option>
+<option value="20000" data-type="moon" data-img="红包树.png">红包树</option>
+<option value="30000" data-type="moon" data-img="月兔.png">月兔</option>
+<option value="28000" data-type="moon" data-img="星空玫瑰.png">星空玫瑰</option>
+<option value="18000" data-type="moon" data-img="月核树.png">月核树</option>
+<option value="5000" data-type="moon" data-img="星叶菜.png">星叶菜</option>
+<option value="1000" data-type="moon" data-img="月莓.png">月莓</option>
+<option value="1000" data-type="moon" data-img="银灰苔.png">银灰苔</option>
+<option value="1000" data-type="moon" data-img="月光草.png">月光草</option>
+<option value="8000" data-type="moon" data-img="月环树.png">月环树</option>
+<option value="9000" data-type="moon" data-img="月番茄.png">月番茄</option>
+<option value="5000" data-type="moon" data-img="月灯草.png">月灯草</option>
+<option value="10000" data-type="moon" data-img="灰壤豆.png">灰壤豆</option>
+<option value="32000" data-type="moon" data-img="月影梅.png">月影梅</option>
+</select>
+<span class="select-arrow">▼</span>
+</div>
+
+<div id="selectedCrop" class="selected-crop">
+  <div class="crop-icon"></div>
+  <div class="crop-name">请选择作物</div>
+</div>
+
+<input type="number" id="raceInput" placeholder="可手动修改种族值" min="1" oninput="calc()">
+<div class="race-tip">选作物自动填充，可自定义</div>
+</div>
+
+<div class="section">
+<h2>⚖️ 重量 ↔ 百分比</h2>
+<input type="number" id="maxWeight" placeholder="最大重量 kg" step="0.1" value="10" oninput="sync();calc()">
+<input type="number" id="currentWeight" placeholder="当前重量 kg" step="0.01" value="5.0" oninput="fromWeight();calc()">
+<input type="number" id="percent" placeholder="占比 %" step="0.1" value="50" oninput="fromPercent();calc()">
+<div id="weightTip" class="weight-info"></div>
+</div>
+
+<div class="section">
+<h2>✨ 基础突变（已改为红色）</h2>
+<select id="baseMut" onchange="calc()">
+<option value="1">无</option>
+<option value="3" style="color:#00b42a">银（绿）</option>
+<option value="10" style="color:#1677ff">金（蓝）</option>
+<option value="20" style="color:#fa8c16">水晶（金）</option>
+<option value="30" style="color:#ff0000;font-weight:bold;">流光（红）</option>
+<option value="40" style="color:#ff0000;font-weight:bold;">星空（红）</option>
+</select>
+</div>
+
+<div class="section">
+<h2>🍓 专属突变</h2>
+<div class="checkbox-group">
+<div class="checkbox-item"><input type="checkbox" onchange="calc()"><span class="purple">土豆-薯片 ×1.5</span></div>
+<div class="checkbox-item"><input type="checkbox" onchange="calc()"><span class="purple">草莓-连体 ×1.5</span></div>
+<div class="checkbox-item"><input type="checkbox" onchange="calc()"><span class="purple">西瓜-方形 ×1.5</span></div>
+<div class="checkbox-item"><input type="checkbox" onchange="calc()"><span class="purple">苹果-糖葫芦 ×1.5</span></div>
+<div class="checkbox-item"><input type="checkbox" onchange="calc()"><span class="gold">黄瓜-黄瓜蛇 ×2</span></div>
+<div class="checkbox-item"><input type="checkbox" onchange="calc()"><span class="gold">香蕉-香蕉猴 ×2</span></div>
+<div class="checkbox-item"><input type="checkbox" onchange="calc()"><span class="rainbow">向日葵-笑日葵 ×10</span></div>
+</div>
+</div>
+
+<div class="section">
+<h2>🌤️ 一键突变（支持叠加+互斥锁）</h2>
+<div class="btn-group">
+<button class="onekey" onclick="oneKeyMoon()">🌕 一键月球突变</button>
+<button class="onekey" onclick="oneKeyRare()">✨ 一键稀有突变</button>
+<button class="onekey" onclick="oneKeyOld()">📜 一键过往突变</button>
+<button class="onekey" onclick="oneKeyCommon()">🌱 一键常见突变</button>
+<button class="onekey warn" onclick="clearAll()">🗑️ 清空所有突变</button>
+</div>
+<div class="combo-rule">✅ 支持多组一键叠加｜流火↔瓷化强制互斥｜取消组合自动清前置</div>
+
+<div class="checkbox-group">
+<!-- 灰色基础突变 -->
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="wet" value="1" onchange="updateCombo();calc()"><span class="gray">潮湿 1</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="chill" value="1" onchange="calc()"><span class="gray">颤栗 1</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="hot" value="2" onchange="updateCombo();calc()"><span class="gray">灼热 2</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="frost" value="2" onchange="updateCombo();calc()"><span class="gray">结霜 2</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="sand" value="2" onchange="updateCombo();calc()"><span class="gray">沙尘 2</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="snow" value="2" onchange="calc()"><span class="gray">覆雪 2</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="fog" value="2" onchange="calc()"><span class="gray">迷雾 2</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="life" value="2" onchange="calc()"><span class="gray">生机 2</span></div>
+
+<!-- 绿色突变 -->
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="thunder" value="3" onchange="calc()"><span class="green">落雷 3</span></div>
+<div class="checkbox-item"><input type="checkbox" class="combo" data-combo="freeze" value="4" onchange="calc()"><span class="green">冰冻 4</span></div>
+<div class="checkbox-item"><input type="checkbox" class="combo" data-combo="pottery" value="4" onchange="updateCombo();calc()"><span class="green">陶化 4</span></div>
+<div class="checkbox-item moon"><input type="checkbox" class="w" data-type="meteor" value="5" onchange="calc()"><span class="green">陨石 5</span></div>
+
+<!-- 蓝色突变 -->
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="coin" value="5" onchange="calc()"><span class="blue">金币 5</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="bloodmoon" value="5" onchange="calc()"><span class="blue">血月 5</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="rainbow" value="5" onchange="calc()"><span class="blue">彩虹 5</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="fluorescent" value="5" onchange="calc()"><span class="blue">荧光 5</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="aurora" value="5" onchange="calc()"><span class="blue">极光 5</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="ghost" value="5" onchange="calc()"><span class="blue">幽魂 5</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="horror" value="5" onchange="calc()"><span class="blue">惊魂夜 5</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="hakimi" value="5" onchange="calc()"><span class="blue">哈基米 5</span></div>
+<!-- 蓝色太阳耀斑（月球专属） -->
+<div class="checkbox-item moon"><input type="checkbox" class="w" data-type="sunflare" value="3" onchange="updateCombo();calc()"><span class="blue">太阳耀斑 3</span></div>
+
+<!-- 紫色突变 -->
+<div class="checkbox-item"><input type="checkbox" class="combo" data-combo="porcelain" value="8" onchange="togglePorcelain()"><span class="purple">瓷化 8</span></div>
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="star" value="10" onchange="calc()"><span class="purple">星环 10</span></div>
+<div class="checkbox-item moon"><input type="checkbox" class="w" data-type="darkfog" value="5" onchange="calc()"><span class="purple">暗雾 5</span></div>
+<div class="checkbox-item moon"><input type="checkbox" class="w" data-type="eclipse" value="5" onchange="calc()"><span class="purple">日蚀 5</span></div>
+
+<!-- 金色突变 -->
+<div class="checkbox-item moon"><input type="checkbox" class="combo" data-combo="fire" value="5" onchange="toggleFire()"><span class="gold">流火 5</span></div>
+
+<!-- 彩色突变 -->
+<div class="checkbox-item"><input type="checkbox" class="w" data-type="neon" value="18" onchange="calc()"><span class="rainbow">霓虹 18</span></div>
+</div>
+</div>
+
+<button onclick="calc()">计算最终价格</button>
+<div class="result">
+最终价格：<div class="price" id="final">0</div>
+<div class="mut-sum-info" id="mutSum">当前突变总值：0</div>
+</div>
+
+</div>
+
+<script>
+// 组合突变配方（完全匹配游戏内规则）
+const recipes = {
+  freeze: { needBase: ['wet','frost'] },
+  // 陶化 = 潮湿 + 沙尘
+  pottery: { needBase: ['wet','sand'] },
+  // 瓷化 = 陶化 + 灼热
+  porcelain: { needBase: ['hot'], needCombo: ['pottery'] },
+  // 流火 = 灼热 + 太阳耀斑
+  fire: { needBase: ['hot','sunflare'] }
+};
+
+// 突变分组配置
+const moonMutations = ['sunflare','eclipse','darkfog','meteor','fire'];
+const rareMutations = ['fluorescent','rainbow','star','neon','bloodmoon'];
+const oldMutations = ['aurora','ghost','horror'];
+const commonMutations = [
+  'wet','chill','hot','frost','sand','snow','fog','life','thunder','coin','hakimi',
+  'freeze','pottery','porcelain'
+];
+
+// ====================== 核心：流火↔瓷化双向强制互斥锁 ======================
+function checkMutex(activeType) {
+  const isMoon = document.querySelector('#cropSelect option:checked').dataset.type === 'moon';
+  if(!isMoon) return; // 非月球作物不触发互斥
+
+  const fire = document.querySelector(`.combo[data-combo="fire"]`);
+  const porcelain = document.querySelector(`.combo[data-combo="porcelain"]`);
+
+  // 勾选流火 → 强制清除瓷化
+  if(activeType === 'fire' && fire.checked) {
+    porcelain.checked = false;
+    // 取消瓷化同步清前置
+    document.querySelector(`.w[data-type="wet"]`).checked = false;
+    document.querySelector(`.w[data-type="sand"]`).checked = false;
+    document.querySelector(`.w[data-type="hot"]`).checked = false;
+    document.querySelector(`.combo[data-combo="pottery"]`).checked = false;
+  }
+  // 勾选瓷化 → 强制清除流火
+  if(activeType === 'porcelain' && porcelain.checked) {
+    fire.checked = false;
+    // 取消流火同步清前置
+    document.querySelector(`.w[data-type="hot"]`).checked = false;
+    document.querySelector(`.w[data-type="sunflare"]`).checked = false;
+  }
+}
+
+// 显示作物图片
+function showSelectedCrop() {
+  const s = document.getElementById('cropSelect');
+  const o = s.options[s.selectedIndex];
+  const img = o.dataset.img;
+  document.getElementById('selectedCrop').innerHTML = `
+    <div class="crop-icon" style="background-image:url('${img}')"></div>
+    <div class="crop-name">${o.text}</div>
+  `;
+}
+
+// 组合突变自动解锁（勾前置自动出组合）
+function updateCombo(){
+  for(const c in recipes){
+    const r = recipes[c];
+    const okBase = r.needBase.every(x => document.querySelector(`.w[data-type="${x}"]`)?.checked);
+    const okCombo = !r.needCombo || r.needCombo.every(x => document.querySelector(`.combo[data-combo="${x}"]`)?.checked);
+    const el = document.querySelector(`.combo[data-combo="${c}"]`);
+    if(el) el.checked = okBase && okCombo;
+  }
+  calc();
+}
+
+// ====================== 瓷化勾选/取消完整逻辑 ======================
+function togglePorcelain(){
+  const p = document.querySelector(`.combo[data-combo="porcelain"]`);
+  
+  // 触发互斥锁
+  checkMutex('porcelain');
+
+  // 勾选瓷化 → 自动勾选所有前置：潮湿、沙尘、灼热、陶化
+  if(p.checked){
+    document.querySelector(`.w[data-type="wet"]`).checked = true;    // 潮湿
+    document.querySelector(`.w[data-type="sand"]`).checked = true;   // 沙尘
+    document.querySelector(`.w[data-type="hot"]`).checked = true;    // 灼热
+    document.querySelector(`.combo[data-combo="pottery"]`).checked = true; // 陶化
+  } 
+  // 取消勾选瓷化 → 自动去除所有前置
+  else {
+    document.querySelector(`.w[data-type="wet"]`).checked = false;    // 潮湿
+    document.querySelector(`.w[data-type="sand"]`).checked = false;   // 沙尘
+    document.querySelector(`.w[data-type="hot"]`).checked = false;    // 灼热
+    document.querySelector(`.combo[data-combo="pottery"]`).checked = false; // 陶化
+  }
+
+  updateCombo();
+  calc();
+}
+
+// ====================== 流火勾选/取消完整逻辑 ======================
+function toggleFire(){
+  const f = document.querySelector(`.combo[data-combo="fire"]`);
+  
+  // 触发互斥锁
+  checkMutex('fire');
+
+  // 勾选流火 → 自动勾选前置：太阳耀斑 + 灼热
+  if(f.checked){
+    document.querySelector(`.w[data-type="hot"]`).checked = true;
+    document.querySelector(`.w[data-type="sunflare"]`).checked = true;
+  } 
+  // 取消勾选流火 → 自动去除前置：太阳耀斑 + 灼热
+  else {
+    document.querySelector(`.w[data-type="hot"]`).checked = false;
+    document.querySelector(`.w[data-type="sunflare"]`).checked = false;
+  }
+
+  updateCombo();
+  calc();
+}
+
+// 基础功能函数
+function setRaceValue() {
+  document.getElementById('raceInput').value = document.getElementById('cropSelect').value;
+}
+function updateMoonVisibility() {
+  const isMoon = document.querySelector('#cropSelect option:checked').dataset.type === 'moon';
+  document.querySelectorAll('.checkbox-item.moon').forEach(el=>el.style.display=isMoon?'flex':'none');
+}
+function sync(){
+  const max=+document.getElementById('maxWeight').value||10;
+  const cur=+document.getElementById('currentWeight').value||0;
+  const p=(cur/max*100).toFixed(1);
+  document.getElementById('weightTip').innerText=`最大：${max}kg｜当前：${cur.toFixed(2)}kg｜占比：${p}%`;
+  document.getElementById('percent').value=p;
+}
+function fromWeight(){sync();}
+function fromPercent(){
+  const max=+document.getElementById('maxWeight').value||10;
+  const p=+document.getElementById('percent').value||0;
+  document.getElementById('currentWeight').value=(max*p/100).toFixed(2);sync();
+}
+
+// ====================== 一键突变（叠加版+互斥锁）======================
+// 一键月球突变（含太阳耀斑+流火）
+function oneKeyMoon(){
+  const isMoon = document.querySelector('#cropSelect option:checked').dataset.type === 'moon';
+  if(!isMoon){alert("仅月球作物可用！");return;}
+  document.querySelectorAll('.moon .w,.moon .combo').forEach(e=>e.checked=true);
+  checkMutex('fire');
+  updateCombo();calc();
+}
+
+// 一键稀有突变（叠加）
+function oneKeyRare(){
+  rareMutations.forEach(t=>{const el=document.querySelector(`.w[data-type="${t}"]`);if(el)el.checked=true;});
+  updateCombo();calc();
+}
+
+// 一键过往突变（叠加）
+function oneKeyOld(){
+  oldMutations.forEach(t=>{const el=document.querySelector(`.w[data-type="${t}"]`);if(el)el.checked=true;});
+  updateCombo();calc();
+}
+
+// 一键常见突变（叠加，含冰冻/陶化/瓷化/哈基米）
+function oneKeyCommon(){
+  commonMutations.forEach(t => {
+    const el = document.querySelector(`.w[data-type="${t}"]`) || document.querySelector(`.combo[data-combo="${t}"]`);
+    if(el) el.checked = true;
+  });
+  checkMutex('porcelain');
+  updateCombo();
+  calc();
+}
+
+// 清空所有突变
+function clearAll(){
+  document.querySelectorAll('.w,.combo').forEach(e=>e.checked=false);
+  calc();
+}
+
+// 核心价格计算
+function calc(){
+  const race=+document.getElementById('raceInput').value||0;
+  const w=+document.getElementById('currentWeight').value||0;
+  const base=+document.getElementById('baseMut').value||1;
+  let sp=1;
+  // 专属突变计算
+  document.querySelectorAll('.checkbox-item input:checked').forEach(i=>{
+    const txt=i.nextElementSibling.innerText;
+    if(txt.includes('薯片')||txt.includes('连体')||txt.includes('方形')||txt.includes('糖葫芦'))sp*=1.5;
+    else if(txt.includes('黄瓜蛇')||txt.includes('香蕉猴'))sp*=2;
+    else if(txt.includes('笑日葵'))sp*=10;
+  });
+  // 突变总值累加
+  const vals=[];
+  document.querySelectorAll('.w:checked,.combo:checked').forEach(x=>vals.push(+x.value));
+  const sum=vals.reduce((a,b)=>a+b,0);
+  document.getElementById('mutSum').innerText=`当前突变总值：${sum}`;
+  // 最终价格计算
+  const price=race*Math.pow(w,1.5)*base*sp*(1+sum);
+  document.getElementById('final').innerText=Math.round(price).toLocaleString();
+}
+
+// 页面加载初始化
+window.onload=()=>{
+  setRaceValue();updateMoonVisibility();showSelectedCrop();sync();calc();
+}
+</script>
+</body>
+</html>
